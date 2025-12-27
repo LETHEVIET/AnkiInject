@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+*.spec
+
+# Virtual environments
+.venv
+.venv_build
+
+# Environment variables
+.env
+.env.local
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+.DS_Store
+
+# AppImage and Packing
+AppDir/
+*.AppImage
+*.exe
+packaging/anki-inject.png
+build_log.txt
+*.log

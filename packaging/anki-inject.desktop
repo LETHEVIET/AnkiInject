@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Anki Inject
+Comment=AI-powered Anki flashcard generator
+Exec=anki-inject
+Icon=anki-inject
+Terminal=false
+Categories=Education;Science;
