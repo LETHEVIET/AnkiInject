@@ -62,6 +62,7 @@ jobs:
 
       - name: Build Executable
         run: |
+          uv venv
           uv pip install pyinstaller
           uv run pyinstaller --noconfirm --onefile --windowed --add-data "frontend/dist;frontend/dist" --add-data "app;app" --name "Anki-Inject" main.py
 
