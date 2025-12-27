@@ -25,6 +25,7 @@ cd ..
 
 # 2. Ensure PyInstaller is in the environment
 echo "🐍 Ensuring PyInstaller is ready..."
+uv venv
 uv pip install pyinstaller
 
 # 3. Bundle with PyInstaller using uv
