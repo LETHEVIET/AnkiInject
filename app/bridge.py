@@ -3,6 +3,7 @@ from .ai import GeminiClient
 from .anki import AnkiConnectClient
 import os
 import json
+import gc
 from pathlib import Path
 import pyperclip
 
@@ -109,6 +110,9 @@ class Bridge:
                 # Send card to frontend immediately
                 js_code = f"window.receiveCard({json.dumps(card)})"
                 self._window.evaluate_js(js_code)
+            
+            # Help GC after stream
+            gc.collect()
             return {"status": "success"}
         except Exception as e:
             return {"status": "error", "message": str(e)}
@@ -140,3 +144,8 @@ class Bridge:
             "duplicates": duplicate_count, 
             "errors": errors
         }
+    
+    def clear_cache(self):
+        """Manually trigger garbage collection"""
+        gc.collect()
+        return {"status": "success"}

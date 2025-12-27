@@ -1,4 +1,4 @@
-import requests
+import httpx
 import json
 
 class AnkiConnectClient:
@@ -12,7 +12,8 @@ class AnkiConnectClient:
             "params": params
         }
         try:
-            response = requests.post(self.url, json=payload).json()
+            with httpx.Client() as client:
+                response = client.post(self.url, json=payload).json()
             if len(response) != 2:
                 raise Exception("response has an unexpected number of fields")
             if "error" not in response:
@@ -22,7 +23,7 @@ class AnkiConnectClient:
             if response["error"] is not None:
                 raise Exception(response["error"])
             return response["result"]
-        except requests.exceptions.ConnectionError:
+        except httpx.ConnectError:
             raise Exception("Could not connect to Anki. Is it running with AnkiConnect installed?")
 
     def check_connection(self):

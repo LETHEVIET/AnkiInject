@@ -38,6 +38,31 @@
 
 ---
 
+## 🛠️ Tech Stack
+
+### Backend (Python Core)
+- **Language**: Python 3.10+
+- **Application Wrapper**: `pywebview` — Native windowing and Python/JavaScript bridge. Optimized for the **GTK backend** on Linux.
+- **AI Integration**: `google-genai` — Interfaces with Google's Gemini models for flashcard generation and refinement.
+- **HTTP Client**: `httpx` — Modern, async-ready HTTP client for AnkiConnect and AI streaming.
+- **Process Management**: `psutil` & `gc` — Used for memory profiling and manual garbage collection.
+
+### Frontend (Modern Web)
+- **Framework**: **Svelte** (TypeScript) — High-performance reactive UI with a near-zero runtime footprint.
+- **Styling**: **Tailwind CSS** — Utility-first styling with modern aesthetics.
+- **Icons**: **Lucide Svelte** — Clean, scalable UI icons.
+- **Build Tool**: **Vite** — Fast, modern frontend bundling.
+
+### Packaging & Performance
+- **Bundler**: **PyInstaller** — Standalone executable packaging.
+- **Distribution**: **AppImage** — Universal single-file Linux distribution.
+- **Optimization**: "Ultra-Light" mode features:
+  - **~71 MB** Storage Footprint
+  - **~150-250 MB** RAM Usage
+  - **Hardware Acceleration Tuning** for stable performance on low-spec hardware.
+
+---
+
 ## 📥 Installation
 
 ### Download Binaries
