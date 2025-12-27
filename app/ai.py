@@ -3,6 +3,7 @@ from google.genai import types
 from pydantic import BaseModel
 import os
 import json
+import re
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -137,17 +138,23 @@ class GeminiClient:
             buffer += delta
             
             if not in_array:
-                # Look for the start of the cards array
-                cards_start = buffer.find('"cards": [')
-                if cards_start != -1:
-                    buffer = buffer[cards_start + 10:] 
+                # Look for the start of the cards array: "cards": [ or just [
+                match = re.search(r'"cards"\s*:\s*\[', buffer)
+                if match:
+                    buffer = buffer[match.end():]
                     in_array = True
                 else:
-                    stripped = buffer.lstrip()
-                    if stripped.startswith('['):
-                         idx = buffer.find('[')
-                         buffer = buffer[idx + 1:]
-                         in_array = True
+                    # Fallback for if it's just a raw array [ ... ]
+                    idx = buffer.find('[')
+                    if idx != -1:
+                        # Ensure it's not part of an object key or something
+                        # This is a bit of a gamble, but if we haven't found "cards": [ yet,
+                        # and we encounter a [, it might be the start.
+                        # Simple heuristic: if it's the very first char after optional { and whitespace
+                        temp_buf = buffer.lstrip().lstrip('{').lstrip()
+                        if temp_buf.startswith('['):
+                            buffer = buffer[idx + 1:]
+                            in_array = True
 
             if in_array:
                 depth = 0

@@ -31,7 +31,9 @@ def main():
     )
     
     bridge.set_window(window)
-    webview.start(debug=True if "--dev" in sys.argv else False)
+    # On Linux, explicitly choosing 'gtk' can help if double-loading occurs
+    # 'debug=True' is handled by argv check
+    webview.start(gui='gtk', debug=True if "--dev" in sys.argv else False)
 
 if __name__ == "__main__":
     main()

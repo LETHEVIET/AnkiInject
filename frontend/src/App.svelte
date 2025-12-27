@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
   import { fade, slide, fly, scale } from "svelte/transition";
-  import { Plug, PlugZap, Settings } from "lucide-svelte";
+  import { Plug, PlugZap, Settings, RefreshCw } from "lucide-svelte";
 
   interface Flashcard {
     front: string;
@@ -112,8 +112,6 @@
       apiReady = true;
       fetchDecks();
       fetchSettings();
-      // Periodically check Anki status
-      setInterval(fetchDecks, 5000);
     };
 
     // @ts-ignore
@@ -350,6 +348,14 @@
               class="bg-[#f5f5f5] hover:bg-[#eee] border border-[#ddd] text-[#00aaff] px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-tight transition-colors shadow-sm active:scale-95"
             >
               + New
+            </button>
+            <button
+              on:click={fetchDecks}
+              class="bg-[#f5f5f5] hover:bg-[#eee] border border-[#ddd] text-slate-400 hover:text-[#00aaff] p-1 rounded transition-colors shadow-sm active:scale-95 flex items-center justify-center"
+              title="Refresh Decks"
+              disabled={loading}
+            >
+              <RefreshCw size="12" class={loading ? "animate-spin" : ""} />
             </button>
           </div>
         {/if}
