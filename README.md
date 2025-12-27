@@ -56,10 +56,6 @@
 ### Packaging & Performance
 - **Bundler**: **PyInstaller** — Standalone executable packaging.
 - **Distribution**: **AppImage** — Universal single-file Linux distribution.
-- **Optimization**: "Ultra-Light" mode features:
-  - **~71 MB** Storage Footprint
-  - **~150-250 MB** RAM Usage
-  - **Hardware Acceleration Tuning** for stable performance on low-spec hardware.
 
 ---
 
