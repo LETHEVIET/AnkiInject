@@ -28,7 +28,15 @@
     { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (Legacy)" },
   ];
 
-  let selectedModel = textModels[3].id;
+  let selectedModel = "gemini-1.5-flash"; // Default backup
+  // Try to find gemini-3-flash
+  const defaultModelObj =
+    textModels.find((m) => m.id.includes("3-flash")) ||
+    textModels.find((m) => m.id.includes("1.5-flash"));
+  if (defaultModelObj) {
+    selectedModel = defaultModelObj.id;
+  }
+
   let decks = ["Default"];
   let selectedDeck = "Default";
   let showNewDeckInput = false;
@@ -115,8 +123,26 @@
       window.addEventListener("pywebviewready", handleReady);
     }
 
+    // @ts-ignore
+    window.receiveCard = (card: any) => {
+      const newCard: Flashcard = {
+        ...card,
+        refining: false,
+        refineInput: "",
+      };
+      cards = [...cards, newCard];
+      // Scroll to bottom of list
+      if (cardsListElement) {
+        tick().then(() => {
+          cardsListElement.scrollTop = cardsListElement.scrollHeight;
+        });
+      }
+    };
+
     return () => {
       window.removeEventListener("pywebviewready", handleReady);
+      // @ts-ignore
+      delete window.receiveCard;
     };
   });
 
@@ -159,19 +185,13 @@
 
     try {
       // @ts-ignore
-      const result = await pywebview.api.generate_cards(
+      const result = await pywebview.api.generate_cards_stream(
         inputText,
         selectedModel,
         aiSystemPrompt,
       );
       if (result.status === "success") {
-        const newCards = result.cards.map((c: any) => ({
-          ...c,
-          refining: false,
-          refineInput: "",
-        }));
-        cards = [...cards, ...newCards];
-        showStatus(`Added ${newCards.length} cards to the stage.`, 4000);
+        showStatus(`Generation complete.`, 3000);
         inputText = ""; // Clear input for next paste
       } else {
         error = result.message;
@@ -278,37 +298,6 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <!-- Anki Status Indicator (Connector Icon) -->
-      <div
-        class="relative flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-300 {ankiOnline
-          ? 'text-emerald-500 bg-emerald-50'
-          : 'text-slate-300 bg-slate-50'}"
-        title={ankiOnline ? "Anki Connected" : "Anki Disconnected"}
-      >
-        {#if ankiOnline}
-          <PlugZap size="18" strokeWidth="2" />
-        {:else}
-          <Plug size="18" strokeWidth="2" />
-        {/if}
-
-        <!-- Pulse Dot for Online -->
-        {#if ankiOnline}
-          <span
-            class="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white animate-pulse"
-          ></span>
-        {/if}
-      </div>
-
-      <!-- Settings Button -->
-      <button
-        on:click={() => (showSettings = true)}
-        class="p-2 text-slate-400 hover:text-[#00aaff] transition-colors rounded-full hover:bg-slate-100"
-        aria-label="Settings"
-        title="Settings"
-      >
-        <Settings size="20" strokeWidth="2.5" />
-      </button>
-
       <div class="flex items-center gap-2">
         <span class="text-[10px] uppercase font-bold text-slate-400">Model</span
         >
@@ -365,6 +354,36 @@
           </div>
         {/if}
       </div>
+      <!-- Anki Status Indicator (Connector Icon) -->
+      <div
+        class="relative flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-300 {ankiOnline
+          ? 'text-emerald-500 bg-emerald-50'
+          : 'text-slate-300 bg-slate-50'}"
+        title={ankiOnline ? "Anki Connected" : "Anki Disconnected"}
+      >
+        {#if ankiOnline}
+          <PlugZap size="18" strokeWidth="2" />
+        {:else}
+          <Plug size="18" strokeWidth="2" />
+        {/if}
+
+        <!-- Pulse Dot for Online -->
+        {#if ankiOnline}
+          <span
+            class="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white animate-pulse"
+          ></span>
+        {/if}
+      </div>
+
+      <!-- Settings Button -->
+      <button
+        on:click={() => (showSettings = true)}
+        class="p-2 text-slate-400 hover:text-[#00aaff] transition-colors rounded-full hover:bg-slate-100"
+        aria-label="Settings"
+        title="Settings"
+      >
+        <Settings size="20" strokeWidth="2.5" />
+      </button>
     </div>
   </header>
 
@@ -373,13 +392,42 @@
     <!-- Left Panel: Input -->
     <div class="w-1/2 flex flex-col border-r border-[#ddd] bg-white">
       <div
-        class="px-4 py-2 bg-[#fcfcfc] border-b border-[#eee] flex items-center justify-between"
+        class="px-4 py-2 bg-[#fcfcfc] border-b border-[#eee] flex items-center justify-between shadow-sm shrink-0"
       >
         <h3
           class="text-[11px] font-bold uppercase tracking-wider text-slate-400"
         >
           Paste Study Notes
         </h3>
+        <button
+          on:click={async () => {
+            try {
+              // @ts-ignore
+              const result = await pywebview.api.read_clipboard();
+              if (result.status === "success") {
+                inputText = result.text;
+              } else {
+                console.error("Clipboard error:", result.message);
+              }
+            } catch (err) {
+              console.error("Bridge clipboard failed", err);
+            }
+          }}
+          class="bg-slate-900 hover:bg-black text-white px-5 py-1 rounded-full font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 active:scale-95"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-3 h-3"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            ><path
+              d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+            /><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /></svg
+          >
+          Paste
+        </button>
       </div>
       <textarea
         bind:value={inputText}

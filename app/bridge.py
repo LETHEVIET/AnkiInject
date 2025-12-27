@@ -4,12 +4,20 @@ from .anki import AnkiConnectClient
 import os
 import json
 from pathlib import Path
+import pyperclip
 
 class Bridge:
     def __init__(self):
         self._window = None
         self.ai_client = GeminiClient()
         self.anki_client = AnkiConnectClient()
+
+    def read_clipboard(self):
+        try:
+            text = pyperclip.paste()
+            return {"status": "success", "text": text}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
 
     def set_window(self, window):
         self._window = window
@@ -91,6 +99,22 @@ class Bridge:
             return {"status": "success", "cards": cards}
         except Exception as e:
             return {"status": "error", "message": str(e)}
+
+    def generate_cards_stream(self, text, model_name='gemini-1.5-flash', custom_prompt=None):
+        if not self._window:
+             return {"status": "error", "message": "Window handle not available"}
+             
+        try:
+            for card in self.ai_client.generate_flashcards_stream(text, model=model_name, system_instruction=custom_prompt):
+                # Send card to frontend immediately
+                js_code = f"window.receiveCard({json.dumps(card)})"
+                self._window.evaluate_js(js_code)
+            return {"status": "success"}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+
+
 
     def insert_cards(self, cards, deck_name="Default"):
         if not self.anki_client.check_connection():
