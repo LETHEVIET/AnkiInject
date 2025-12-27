@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Anki Inject Logo" width="128" />
+  <img src="assets/logo.png" alt="Anki Inject Logo" width="256" />
 </p>
 
 # 🧠 Anki Inject: AI-Powered Flashcard Creator
 
-[![Release](https://img.shields.io/github/v/release/yourusername/anki_inject?style=flat-square)](https://github.com/yourusername/anki_inject/releases)
+[![Release](https://img.shields.io/github/v/release/LETHEVIET/AnkiInject?style=flat-square)](https://github.com/LETHEVIET/AnkiInject/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Build](https://img.shields.io/github/actions/workflow/status/yourusername/anki_inject/release.yml?style=flat-square)](https://github.com/yourusername/anki_inject/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/LETHEVIET/AnkiInject/release.yml?style=flat-square)](https://github.com/LETHEVIET/AnkiInject/actions)
 
 **Anki Inject** is a minimalist desktop companion designed to streamline your study workflow. Instead of manual data entry, use **Google Gemini AI** as your high-speed formatting assistant to transform "fuzzy" study notes, raw textbook snippets, or unstructured thoughts into perfectly structured Anki flashcards.
 
